@@ -24,8 +24,12 @@
   "homepage": "https://github.com/eric-stanley/Node-Express-Simple-API-App#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "cloudinary": "^1.22.0",
     "dotenv": "^8.2.0",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "express-validator": "^6.6.0",
+    "mongoose": "^5.9.22",
+    "multer": "^1.4.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
