@@ -3,8 +3,10 @@ const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
+const cors = require('cors');
 
 const feedRoutes = require('./routes/feed');
+const authRoutes = require('./routes/auth');
 const fileHelper = require('./util/file');
 
 dotenv.config();
@@ -20,24 +22,33 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use(fileHelper.upload.single('image'));
 app.use(fileHelper.imageStore.uploadToCloud);
-app.use('/images', express.static(path.join(__dirname, 'images')));
 
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    next();
-});
+// app.use((req, res, next) => {
+//     res.setHeader('Access-Control-Allow-Origin', '*');
+//     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+//     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+//     next();
+// });
+
+app.use(cors({ 
+  origin: '*',
+  methods: 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+  allowedHeaders: 'Content-Type, Authorization'
+}));
 
 app.use('/feed', feedRoutes);
+app.use('/auth', authRoutes);
+
 app.use((err, req, res, next) => {
     console.log(err);
     const status = err.statusCode || 500;
     const message = err.message;
+    const data = err.data
     res
         .status(status)
         .json({
-            message: message
+            message: message,
+            data: data
         });
 })
 
