@@ -20,7 +20,6 @@ exports.getPosts = (req, res, next) => {
                 .limit(perPage);
         })
         .then(posts => {
-            console.log(posts);
             res
                 .status(200)
                 .json({
@@ -228,7 +227,6 @@ exports.deletePost = (req, res, next) => {
             return Post.findByIdAndRemove(postId);
         })
         .then(result => {
-            console.log(result);
              return User
                 .findById(req.userId);
         })
