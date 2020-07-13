@@ -146,7 +146,7 @@ exports.getPost = (req, res, next) => {
 }
 
 exports.updatePost = (req, res, next) => {
-
+    const postId = req.params.postId;
     const errors = validator.validationResult(req);
 
     if(!errors.isEmpty()) {
@@ -155,10 +155,9 @@ exports.updatePost = (req, res, next) => {
         throw error;
     }
 
-    const postId = req.params.postId;
     const title = req.body.title;
     const content = req.body.content;
-    let imageUrl = req.body.image;
+    let imageUrl;
     let imageAssetId;
     let imagePublicId;
 
@@ -166,12 +165,6 @@ exports.updatePost = (req, res, next) => {
         imageUrl = req.image.url;
         imageAssetId = req.image.asset_id;
         imagePublicId = req.image.public_id;
-    }
-
-    if(!imageUrl) {
-        const error = new Error('No file picked');
-        error.statusCode = 422;
-        throw error;
     }
 
     Post
@@ -192,14 +185,14 @@ exports.updatePost = (req, res, next) => {
                 throw error;
             }
 
-            if(imageUrl !== post.imageUrl) {
-                deleteImage(post.imagePublicId)
+            if(req.file) {
+                deleteImage(post.imagePublicId);
             }
 
             post.title = title;
-            post.imageUrl = imageUrl;
             post.content = content;
             if(req.file) {
+                post.imageUrl = imageUrl;
                 post.imageAssetId = imageAssetId;
                 post.imagePublicId = imagePublicId;
             }
