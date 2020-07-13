@@ -60,27 +60,27 @@ const removeFromCloud = (public_id) => {
     });
 }
 
-const fileStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, 'images');
-    },
-    filename: (req, file, cb) => {
-      cb(null, new Date().toISOString() + '-' + file.originalname);
-    }
-});
+// const fileStorage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//       cb(null, 'images');
+//     },
+//     filename: (req, file, cb) => {
+//       cb(null, new Date().toISOString() + '-' + file.originalname);
+//     }
+// });
 
-const fileFilter = (req, file, cb) => {
-    if(file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
-        cb(null, true);
-    } else {
-        cb(null, false);
-    }
-}
+// const fileFilter = (req, file, cb) => {
+//     if(file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
+//         cb(null, true);
+//     } else {
+//         cb(null, false);
+//     }
+// }
 
-const upload = multer({ storage: fileStorage,  limits: { fileSize: 1024 * 1024 * 5 }, fileFilter });
+// const upload = multer({ storage: fileStorage,  limits: { fileSize: 1024 * 1024 * 5 }, fileFilter });
 
 module.exports = {
-    upload: upload,
+    // upload: upload,
     imageStore: imageStore,
     removeFromCloud: removeFromCloud
 }
