@@ -1,9 +1,11 @@
 const validator = require('express-validator');
 
 const fileHelper = require('../util/file');
+const io = require('../socket');
 
 const Post = require('../models/post');
 const User = require('../models/user');
+const user = require('../models/user');
 
 exports.getPosts = (req, res, next) => {
     const currentPage = req.query.page || 1;
@@ -16,6 +18,10 @@ exports.getPosts = (req, res, next) => {
             totalItems = count;
             return Post
                 .find()
+                .populate('creator')
+                .sort({
+                    createdAt: -1
+                })
                 .skip((currentPage - 1) * perPage)
                 .limit(perPage);
         })
@@ -79,6 +85,18 @@ exports.createPost = (req, res, next) => {
                 .push(post);
             return user
                 .save();
+        })
+        .then((result) => {
+            return io.getIO().emit('posts', {
+                action: 'create',
+                post: { 
+                    ...post._doc, 
+                    creator: {
+                        _id: req.userId,
+                        name: user.name
+                    }
+                }
+            });
         })
         .then(result => {
             res
@@ -160,14 +178,15 @@ exports.updatePost = (req, res, next) => {
         .findById({
             _id: postId
         })
+        .populate('creator')
         .then(post => {
             if(!post) {
                 const err = new Error('Could not find post!');
                 err.statusCode = 404;
                 throw err;
             }
-
-            if(post.creator.toString() !== req.userId) {
+            
+            if(post.creator._id.toString() !== req.userId) {
                 const error = new Error('Not authorized');
                 error.statusCode = 403;
                 throw error;
@@ -187,7 +206,11 @@ exports.updatePost = (req, res, next) => {
             return post.save();
         })
         .then(result => {
-            res
+            io.getIO().emit('posts', {
+                action: 'update',
+                post: result
+            })
+            return res
                 .status(200)
                 .json({
                     message: 'Post updated!',
@@ -210,7 +233,6 @@ exports.deletePost = (req, res, next) => {
             _id: postId
         })
         .then(post => {
-            // check logged in user
             if(!post) {
                 const err = new Error('Could not find post!');
                 err.statusCode = 404;
@@ -224,7 +246,9 @@ exports.deletePost = (req, res, next) => {
             }
 
             deleteImage(post.imagePublicId);
-            return Post.findByIdAndRemove(postId);
+            return Post.findByIdAndRemove(postId, {
+                useFindAndModify: false
+            });
         })
         .then(result => {
              return User
@@ -235,7 +259,11 @@ exports.deletePost = (req, res, next) => {
             return user.save();
         })
         .then(result => {
-            res.status(200).json({
+            io.getIO().emit('posts', {
+                action: 'delete',
+                post: postId
+            })
+            return res.status(200).json({
                 message: 'Post deleted!'
             });
         })

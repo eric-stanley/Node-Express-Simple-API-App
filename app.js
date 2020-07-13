@@ -11,6 +11,7 @@ const fileHelper = require('./util/file');
 
 dotenv.config();
 const app = express();
+const socket = require('./socket');
 
 const MONGODB_URI = 'mongodb://' + process.env.MONGODB_USERNAME +
     ':' + process.env.MONGODB_PASSWORD +
@@ -22,13 +23,6 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use(fileHelper.upload.single('image'));
 app.use(fileHelper.imageStore.uploadToCloud);
-
-// app.use((req, res, next) => {
-//     res.setHeader('Access-Control-Allow-Origin', '*');
-//     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-//     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-//     next();
-// });
 
 app.use(cors({ 
   origin: '*',
@@ -58,7 +52,11 @@ mongoose
     useNewUrlParser: true
   })
   .then(result => {
-    app.listen(process.env.PORT || 3200);
+    const server = app.listen(process.env.PORT || 3200);
+    const io = socket.init(server);
+    io.on('connection', (socket) => {
+      console.log('Client connected');
+    })
     console.log(`App started listening to port ${process.env.PORT}`)
   })
   .catch(err => console.log(err));
