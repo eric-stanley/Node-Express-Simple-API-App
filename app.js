@@ -23,12 +23,6 @@ const MONGODB_URI = 'mongodb+srv://' + process.env.MONGODB_USERNAME +
 //     '@' + process.env.MONGODB_CLUSTER + '/' +
 //     process.env.MONGODB_DATABASE + '?retryWrites=true&w=majority';
 
-app.use(bodyParser.json());
-app.use('/images', express.static(path.join(__dirname, 'images')));
-
-app.use(fileHelper.upload.single('image'));
-app.use(fileHelper.imageStore.uploadToCloud);
-
 // app.use((req, res, next) => {
 //   res.setHeader('Access-Control-Allow-Origin', '*');
 //   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
@@ -42,6 +36,12 @@ app.use(cors({
   allowedHeaders: ['Content-Type, Authorization']
 }));
 // app.use(cors());
+
+app.use(bodyParser.json());
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
+app.use(fileHelper.upload.single('image'));
+app.use(fileHelper.imageStore.uploadToCloud);
 
 app.use('/feed', feedRoutes);
 app.use('/auth', authRoutes);
