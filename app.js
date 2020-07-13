@@ -9,6 +9,8 @@ const feedRoutes = require('./routes/feed');
 const authRoutes = require('./routes/auth');
 const fileHelper = require('./util/file');
 
+const socket = require('./socket');
+
 dotenv.config();
 const app = express();
 
@@ -34,13 +36,12 @@ app.use((req, res, next) => {
 //   methods: ['GET, POST, PUT, PATCH, DELETE, OPTIONS'],
 //   allowedHeaders: ['Content-Type, Authorization']
 // }));
-// app.use(cors());
 
-const socket = require('./socket');
+// app.use(cors({credentials: true, origin: true}));
 
 app.use(bodyParser.json());
-// app.use('/images', express.static(path.join(__dirname, 'images')));
-// app.use(fileHelper.upload.single('image'));
+app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use(fileHelper.upload.single('image'));
 app.use(fileHelper.imageStore.uploadToCloud);
 
 app.use('/feed', feedRoutes);
