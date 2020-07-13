@@ -13,10 +13,15 @@ dotenv.config();
 const app = express();
 const socket = require('./socket');
 
-const MONGODB_URI = 'mongodb://' + process.env.MONGODB_USERNAME +
+const MONGODB_URI = 'mongodb+srv://' + process.env.MONGODB_USERNAME +
     ':' + process.env.MONGODB_PASSWORD +
     '@' + process.env.MONGODB_CLUSTER + '/' +
     process.env.MONGODB_DATABASE + '?retryWrites=true&w=majority';
+
+// const MONGODB_URI = 'mongodb://' + process.env.MONGODB_USERNAME +
+//     ':' + process.env.MONGODB_PASSWORD +
+//     '@' + process.env.MONGODB_CLUSTER + '/' +
+//     process.env.MONGODB_DATABASE + '?retryWrites=true&w=majority';
 
 app.use(bodyParser.json());
 app.use('/images', express.static(path.join(__dirname, 'images')));
