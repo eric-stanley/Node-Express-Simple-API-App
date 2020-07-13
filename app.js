@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
 const cors = require('cors');
+const referrerPolicy = require('referrer-policy');
 
 const feedRoutes = require('./routes/feed');
 const authRoutes = require('./routes/auth');
@@ -30,6 +31,8 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   next();
 });
+
+app.use(referrerPolicy({ policy: 'same-origin' }));
 
 // app.use(cors({ 
 //   origin: '*',
