@@ -11,7 +11,6 @@ const fileHelper = require('./util/file');
 
 dotenv.config();
 const app = express();
-const socket = require('./socket');
 
 const MONGODB_URI = 'mongodb+srv://' + process.env.MONGODB_USERNAME +
     ':' + process.env.MONGODB_PASSWORD +
@@ -30,12 +29,14 @@ const MONGODB_URI = 'mongodb+srv://' + process.env.MONGODB_USERNAME +
 //   next();
 // });
 
-app.use(cors({ 
-  origin: '*',
-  methods: ['GET, POST, PUT, PATCH, DELETE, OPTIONS'],
-  allowedHeaders: ['Content-Type, Authorization']
-}));
-// app.use(cors());
+// app.use(cors({ 
+//   origin: '*',
+//   methods: ['GET, POST, PUT, PATCH, DELETE, OPTIONS'],
+//   allowedHeaders: ['Content-Type, Authorization']
+// }));
+app.use(cors());
+
+const socket = require('./socket');
 
 app.use(bodyParser.json());
 app.use('/images', express.static(path.join(__dirname, 'images')));
