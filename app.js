@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
-const cors = require('cors');
+// const cors = require('cors');
 
 const feedRoutes = require('./routes/feed');
 const authRoutes = require('./routes/auth');
@@ -29,11 +29,18 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(fileHelper.upload.single('image'));
 app.use(fileHelper.imageStore.uploadToCloud);
 
-app.use(cors({ 
-  origin: '*',
-  methods: 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
-  allowedHeaders: 'Content-Type, Authorization'
-}));
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+});
+
+// app.use(cors({ 
+//   origin: '*',
+//   methods: 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+//   allowedHeaders: 'Content-Type, Authorization'
+// }));
 
 app.use('/feed', feedRoutes);
 app.use('/auth', authRoutes);
